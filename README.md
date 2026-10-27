@@ -8,31 +8,21 @@ Designed for learning modern backend engineering, asynchronous architectures, an
 
 ## System Architecture
 
-```text
-                                  +-----------------------+
-                                  |   REST Client / UI    |
-                                  +-----------+-----------+
-                                              |
-                                              | HTTP POST /jobs (Payload)
-                                              v
-                                  +-----------+-----------+
-                                  |   FastAPI Monolith    |
-                                  |     (Producer)        |
-                                  +-----------+-----------+
-                                              |
-                                              | Publish AMQP Message
-                                              v
-                                  +-----------+-----------+
-                                  |   RabbitMQ Broker     |
-                                  | (Queue: celery / RPC) |
-                                  +-----------+-----------+
-                                              |
-                        +---------------------+---------------------+
-                        | AMQP Prefetch (q=1)                       | AMQP Prefetch (q=1)
-                        v                                           v
-            +-----------+-----------+                   +-----------+-----------+
-            | Celery Worker Node 1  |                   | Celery Worker Node 2  |
-            +-----------------------+                   +-----------------------+
+```mermaid
+flowchart TB
+    Client["REST Client / UI"]
+    API["FastAPI Monolith<br/>(Producer)"]
+    Broker["RabbitMQ Broker<br/>(Queue: Celery / RPC)"]
+
+    subgraph Workers["Distributed Worker Nodes"]
+        W1["Celery Worker Node 1"]
+        W2["Celery Worker Node 2"]
+    end
+
+    Client -->|"HTTP POST /jobs (Payload)"| API
+    API -->|"Publish AMQP Message"| Broker
+    Broker -->|"AMQP · Prefetch = 1"| W1
+    Broker -->|"AMQP · Prefetch = 1"| W2
 ```
 
 ---
