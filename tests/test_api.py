@@ -23,12 +23,10 @@ def test_get_job_status_eager(client):
         "job_type": "notification",
         "payload": {"recipient": "test@example.com"}
     }
-    # 1. Отправляем задачу
     submit_res = client.post("/api/v1/jobs", json=payload)
     assert submit_res.status_code == 202
     job_id = submit_res.json()["job_id"]
 
-    # 2. Мокируем AsyncResult для проверки эндпоинта получения статуса
     mock_async_result = MagicMock()
     mock_async_result.status = "SUCCESS"
     mock_async_result.result = {"status": "SENT", "recipient": "test@example.com"}

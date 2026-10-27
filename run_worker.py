@@ -3,10 +3,7 @@ import subprocess
 
 
 def run_worker():
-    print("==========================================================")
-    print("🚀 Starting Celery Worker Engine (RabbitMQ Broker)")
-    print("==========================================================")
-    
+
     cmd = [
         sys.executable, "-m", "celery",
         "-A", "app.core.celery_app.celery_app",

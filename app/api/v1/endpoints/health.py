@@ -10,7 +10,6 @@ router = APIRouter()
 def health_check():
     rabbitmq_connected = False
     try:
-        # Check connection to RabbitMQ via Kombu
         conn = kombu.Connection(settings.CELERY_BROKER_URL)
         conn.connect()
         rabbitmq_connected = conn.connected
